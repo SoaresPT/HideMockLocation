@@ -2,10 +2,8 @@ package com.github.thepiemonster.hidemocklocation;
 
 import static com.github.thepiemonster.hidemocklocation.Common.loadClassIfExist;
 
-import android.app.Service;
 import android.location.LocationManager;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -15,73 +13,6 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class GPSJoystickFixer {
-
-    // makes not kill process. but, joystick app uses for terminate threading.
-    static boolean fixService(XC_LoadPackage.LoadPackageParam lpparam) {
-        String packageName = lpparam.packageName;
-        Class<?> joystick_MapOverlayService = loadClassIfExist(lpparam, packageName + ".service.MapOverlayService");
-        Class<?> joystick_OverlayService = loadClassIfExist(lpparam, packageName + ".service.OverlayService");
-        if (joystick_MapOverlayService != null && joystick_OverlayService != null) {
-            Method joystick_MapOverlayService_onDestroy = XposedHelpers.findMethodExactIfExists(
-                    joystick_MapOverlayService,
-                    "onDestroy"
-            );
-            Method joystick_OverlayService_onDestroy = XposedHelpers.findMethodExactIfExists(
-                    joystick_OverlayService,
-                    "onDestroy"
-            );
-            if (joystick_MapOverlayService_onDestroy != null) {
-                XposedBridge.hookMethod(joystick_MapOverlayService_onDestroy, new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) {
-                        Service thisObject = (Service) param.thisObject;
-                        Method _internalDestroyMethod = XposedHelpers.findMethodExactIfExists(
-                                thisObject.getClass(),
-                                // 4.3.2
-                                "p"
-                        );
-                        if (_internalDestroyMethod != null) {
-                            try {
-                                _internalDestroyMethod.invoke(thisObject);
-                                param.setResult(null);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                // do nothing.
-                            }
-                        } else {
-                            XposedBridge.log("Failed to call internal destroy method(Joystick@MapOverlayService)");
-                        }
-                    }
-                });
-            }
-
-            if (joystick_OverlayService_onDestroy != null) {
-                XposedBridge.hookMethod(joystick_OverlayService_onDestroy, new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) {
-                        Service thisObject = (Service) param.thisObject;
-                        Method _internalDestroyMethod = XposedHelpers.findMethodExactIfExists(
-                                thisObject.getClass(),
-                                // 4.3.2
-                                "D"
-                        );
-                        if (_internalDestroyMethod != null) {
-                            try {
-                                _internalDestroyMethod.invoke(thisObject);
-                                param.setResult(null);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                // do nothing.
-                            }
-                        } else {
-                            XposedBridge.log("Failed to call internal destroy method(Joystick2OverlayService)");
-                        }
-                    }
-                });
-            }
-            XposedBridge.log("fixService()");
-            return true;
-        }
-        return false;
-    }
 
     static boolean isJoystickApp(XC_LoadPackage.LoadPackageParam lpparam) {
         String packageName = lpparam.packageName;

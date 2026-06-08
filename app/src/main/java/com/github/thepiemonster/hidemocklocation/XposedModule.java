@@ -1,19 +1,10 @@
 package com.github.thepiemonster.hidemocklocation;
-
-import static com.github.thepiemonster.hidemocklocation.Common.loadClassIfExist;
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-
-import java.lang.reflect.Method;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -29,84 +20,11 @@ public class XposedModule implements IXposedHookZygoteInit, IXposedHookLoadPacka
             return;
         }
 
-        if (lpparam.packageName.equals("android")) {
-////            // First way
-//            Class<?> GnssNativeCls = loadClassIfExist(lpparam, "com.android.server.location.gnss.hal.GnssNative");
-//            if (GnssNativeCls == null) {
-//                // Android < 12
-//                GnssNativeCls = loadClassIfExist(lpparam, "com.android.server.location.gnss.GnssNative");
-//            }
-//            if (GnssNativeCls != null) {
-//                Method GnssNativeCls_isSupported = XposedHelpers.findMethodExactIfExists(GnssNativeCls, "isSupported");
-//                if (GnssNativeCls_isSupported != null) {
-//                    XposedBridge.hookMethod(GnssNativeCls_isSupported, new XC_MethodHook() {
-//                        @Override
-//                        protected void beforeHookedMethod(MethodHookParam param) {
-//                            param.setResult(false);
-//                        }
-//                    });
-//                }
-//            }
-
-            // Second way
-            Class<?> GnssLocationProviderCls = loadClassIfExist(lpparam, "com.android.server.location.gnss.GnssLocationProvider");
-            if (GnssLocationProviderCls == null) {
-                // Android < 12
-                GnssLocationProviderCls = loadClassIfExist(lpparam, "com.android.server.location.GnssLocationProvider");
-            }
-
-            if (GnssLocationProviderCls != null) {
-                Method handleRequestLocation = XposedHelpers.findMethodExactIfExists(GnssLocationProviderCls, "handleRequestLocation", boolean.class, boolean.class);
-                Method handleReportLocation = XposedHelpers.findMethodExactIfExists(GnssLocationProviderCls, "handleReportLocation", boolean.class, Location.class);
-
-                if (handleRequestLocation != null) {
-                    XposedBridge.hookMethod(handleRequestLocation, new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) {
-                            param.setResult(null);
-                        }
-                    });
-                }
-                if (handleReportLocation != null) {
-                    XposedBridge.hookMethod(handleReportLocation, new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) {
-                            param.setResult(null);
-                        }
-                    });
-                }
-            }
-        } else if (!GPSJoystickFixer.tryFixJoystickApp(lpparam)) {
+        if (!lpparam.packageName.equals("android") && !GPSJoystickFixer.tryFixJoystickApp(lpparam)) {
             handleLoadPackageForApps(lpparam);
-            tryHideSamsungIAPDialog(lpparam);
         }
     }
 
-    private void tryHideSamsungIAPDialog(XC_LoadPackage.LoadPackageParam lpparam) {
-        Class<?> SamsungIAPHelperUtil = loadClassIfExist(lpparam, "com.samsung.android.sdk.iap.lib.helper.HelperUtil");
-        if (SamsungIAPHelperUtil == null)
-            return;
-        Method showUpdateGalaxyStoreDialog = XposedHelpers.findMethodExactIfExists(SamsungIAPHelperUtil,
-                "showUpdateGalaxyStoreDialog",
-                Activity.class);
-        if (showUpdateGalaxyStoreDialog == null)
-            return;
-
-        XposedBridge.hookMethod(showUpdateGalaxyStoreDialog, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                try {
-                    Activity activity = (Activity) param.args[0];
-                    activity.finish();
-                    param.setResult(null);
-                } catch (Exception e) {
-                    // do nothing.
-                }
-            }
-        });
-    }
-
-    @SuppressLint("ObsoleteSdkInt")
     private void handleLoadPackageForApps(XC_LoadPackage.LoadPackageParam lpparam) {
         // Additional info - not implemented - probably will not be implemented in future:
         //
@@ -117,10 +35,7 @@ public class XposedModule implements IXposedHookZygoteInit, IXposedHookLoadPacka
         // Google Play Services
         XposedHelpers.findAndHookMethod("android.location.Location", lpparam.classLoader, "getExtras", hideMockGooglePlayServicesHook);
 
-        // New way of checking if location is mocked, SDK 18+
-        // deprecated in API level 31
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-            XposedHelpers.findAndHookMethod("android.location.Location", lpparam.classLoader, "isFromMockProvider", hideMockProviderHook);
+        XposedHelpers.findAndHookMethod("android.location.Location", lpparam.classLoader, "isFromMockProvider", hideMockProviderHook);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             XposedHelpers.findAndHookMethod("android.location.Location", lpparam.classLoader, "isMock", hideMockProviderHook);

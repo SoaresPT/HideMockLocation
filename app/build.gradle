@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         applicationId "com.github.thepiemonster.hidemocklocation"
-        minSdk 29
+        minSdk 28
         targetSdk 33
-        versionCode 214
-        versionName "2.1.4"
+        versionCode 220
+        versionName "2.2.0"
     }
 
     signingConfigs {
