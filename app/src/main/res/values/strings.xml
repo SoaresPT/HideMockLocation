@@ -14,7 +14,6 @@
 
     <string name="select_apps_activity_title">Select Apps</string>
 
-    <string name="title_test">View Location Data</string>
     <string name="title_credit">Location whitelist</string>
     <string name="title_settings">Settings</string>
     <string name="title_about">About this module</string>
@@ -23,7 +22,7 @@
     <string name="card_detail_not_activated">Make sure you have correctly set up this module</string>
 
     <string name="card_title_activated">Activated</string>
-    <string name="card_detail_activated">View Location Data to test module</string>
+    <string name="card_detail_activated">Configure scoped apps in LSPosed</string>
     <string name="card_serve_time">Served for 0 times</string>
 
     <string name="dialog_not_available_dialog">Not available</string>
@@ -46,8 +45,4 @@
 
     <string name="about_opensource_title">Open Source Licenses</string>
     <string name="no_result">No result</string>
-
-    <string name="alert_dialog_title">Location Data</string>
-    <string name="alert_dialog_ok">Ok</string>
-    <string name="alert_dialog_close">Close</string>
 </resources>

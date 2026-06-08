@@ -13,10 +13,6 @@ about the 'Allow mock locations' setting on A12+ Devices.
 ## Usage
 * Install module to your device.
 * Enable module in LSPosed and reboot device.
-  * System Framework
-  * Target App
-* That's it! You can open Hide Mock Location and view the "Test Location Data" page to view the status of the mock location setting.
-
-## Tips
-* You can view the "Test Location Data" page without enabling the module in LSPosed.
-* Try enabling a mock location application before and after enabling the LSPosed module to view different output settings.
+  * Target app/game
+  * GPS Joystick, if you use the compatibility helper on Samsung One UI devices
+* That's it. The module hides mock-location flags from scoped applications.
