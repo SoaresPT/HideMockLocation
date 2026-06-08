@@ -7,8 +7,10 @@ Main Repo
 ## Summary
 ![Logo](app/src/main/res/mipmap-xhdpi/ic_launcher.png)
 
-Hide Mock Location is an Xposed Module (now LSPosed on Android 11), which hides information 
-about the 'Allow mock locations' setting on A12+ Devices.
+Hide Mock Location is a modified Xposed module focused mostly on bypassing mock location
+detection for Niantic games, and it should work for other scoped apps that use the same
+Android location mock flags. It supports Android 9 and newer, and requires LSPosed/Vector
+to be installed.
 
 ## Usage
 * Install module to your device.
