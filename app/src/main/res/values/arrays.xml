@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="xposed_scope">
-        <item>android</item>
+      <item>com.nianticlabs.pokemongo</item>
+      <item>com.nianticlabs.pokemongo.ares</item>
+      <item>com.nianticlabs.monsterhunter</item>
+      <item>com.nianticlabs.pikmin</item>
+      <item>com.nianticproject.ingress</item>
+      <item>com.nianticlabs.peridot</item>
+      <item>com.theappninjas.fakegpsjoystick</item>
     </string-array>
 </resources>
