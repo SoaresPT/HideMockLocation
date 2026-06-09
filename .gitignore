@@ -42,7 +42,8 @@ captures/
 .idea/libraries
 
 # Keystore files
-#*.jks
+*.jks
+*.keystore
 
 ### Android Patch ###
 gen-external-apklibs
